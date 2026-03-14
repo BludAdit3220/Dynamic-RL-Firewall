@@ -212,7 +212,7 @@ You can extend `baseline_rule_engine` with more realistic rules or export rules 
 
 ### 7. Running the Live Firewall (Linux)
 
-> ⚠️ **Safety First:** By default, the live loop runs in **dry‑run mode** and does *not* modify iptables.  
+> **Safety First:** By default, the live loop runs in **dry‑run mode** and does *not* modify iptables.  
 > Only enable `--apply` after testing carefully and **only** if you have console access to recover from misconfigurations.
 
 Run the live decision loop:
