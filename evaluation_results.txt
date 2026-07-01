@@ -1,0 +1,96 @@
+========================================
+FILE: data/Tuesday-WorkingHours.pcap_ISCX.csv
+[flow_builder] Built 44,592 flow episodes (flow_len=10, groups=3, attack_types=['BENIGN', 'FTP-Patator', 'SSH-Patator'])
+[evaluate] 44,592 episodes  (43,208 benign, 1,384 attack)
+  LSTM-DQN RL FIREWALL vs STATIC RULESET
+  Confusion Matrix:  TP=  2,778  FP=  9,264
+                     FN= 11,057  TN=422,810
+  Static Baseline Ruleset
+  Confusion Matrix:  TP= 13,808  FP=256,276
+                     FN=     27  TN=175,798
+  Confusion Matrix:  TP=   929  FP= 7,684
+                     FN=   455  TN=35,524
+  Flow DR (Recall)             0.6712
+  Flow FPR                     0.1778
+  Early Detection Rate         0.6431
+  Youden J (Flow)              0.4934
+========================================
+FILE: data/Wednesday-workingHours.pcap_ISCX.csv
+[flow_builder] Built 69,272 flow episodes (flow_len=10, groups=6, attack_types=['BENIGN', 'DoS GoldenEye', 'DoS Hulk', 'DoS Slowhttptest', 'DoS slowloris', 'Heartbleed'])
+[evaluate] 69,272 episodes  (44,003 benign, 25,269 attack)
+  LSTM-DQN RL FIREWALL vs STATIC RULESET
+  Confusion Matrix:  TP=249,861  FP=  8,408
+                     FN=  2,810  TN=431,622
+  Static Baseline Ruleset
+  Confusion Matrix:  TP=206,471  FP=259,195
+                     FN= 46,201  TN=180,836
+  Confusion Matrix:  TP=25,247  FP= 7,237
+                     FN=    22  TN=36,766
+  Flow DR (Recall)             0.9991
+  Flow FPR                     0.1645
+  Early Detection Rate         0.9981
+  Youden J (Flow)              0.8347
+========================================
+FILE: data/Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv
+[flow_builder] Built 17,037 flow episodes (flow_len=10, groups=4, attack_types=['BENIGN', 'Web Attack � Brute Force', 'Web Attack � Sql Injection', 'Web Attack � XSS'])
+[evaluate] 17,037 episodes  (16,819 benign, 218 attack)
+  LSTM-DQN RL FIREWALL vs STATIC RULESET
+  Confusion Matrix:  TP=     37  FP=  3,082
+                     FN=  2,140  TN=165,104
+  Static Baseline Ruleset
+  Confusion Matrix:  TP=    278  FP= 97,366
+                     FN=  1,902  TN= 70,820
+  Confusion Matrix:  TP=    26  FP= 2,635
+                     FN=   192  TN=14,184
+  Flow DR (Recall)             0.1193
+  Flow FPR                     0.1567
+  Early Detection Rate         0.1193
+  Youden J (Flow)              -0.0374
+========================================
+FILE: data/Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv
+[flow_builder] Built 28,861 flow episodes (flow_len=10, groups=2, attack_types=['BENIGN', 'Infiltration'])
+[evaluate] 28,861 episodes  (28,857 benign, 4 attack)
+  LSTM-DQN RL FIREWALL vs STATIC RULESET
+  Confusion Matrix:  TP=      0  FP= 26,935
+                     FN=     36  TN=261,631
+  Static Baseline Ruleset
+  Confusion Matrix:  TP=      6  FP=196,931
+                     FN=     30  TN= 91,635
+  Confusion Matrix:  TP=     0  FP=12,687
+                     FN=     4  TN=16,170
+  Flow DR (Recall)             0.0
+  Flow FPR                     0.4397
+  Early Detection Rate         0.0
+  Youden J (Flow)              -0.4397
+========================================
+FILE: data/Friday-WorkingHours-Morning.pcap_ISCX.csv
+[flow_builder] Built 19,104 flow episodes (flow_len=10, groups=2, attack_types=['BENIGN', 'Bot'])
+[evaluate] 19,104 episodes  (18,907 benign, 197 attack)
+  LSTM-DQN RL FIREWALL vs STATIC RULESET
+  Confusion Matrix:  TP=    867  FP=  3,659
+                     FN=  1,099  TN=185,408
+  Static Baseline Ruleset
+  Confusion Matrix:  TP=    773  FP=107,735
+                     FN=  1,193  TN= 81,332
+  Confusion Matrix:  TP=   176  FP= 3,102
+                     FN=    21  TN=15,805
+  Flow DR (Recall)             0.8934
+  Flow FPR                     0.1641
+  Early Detection Rate         0.8832
+  Youden J (Flow)              0.7293
+========================================
+FILE: data/Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv
+[flow_builder] Built 28,647 flow episodes (flow_len=10, groups=2, attack_types=['BENIGN', 'PortScan'])
+[evaluate] 28,647 episodes  (12,754 benign, 15,893 attack)
+  LSTM-DQN RL FIREWALL vs STATIC RULESET
+  Confusion Matrix:  TP=158,779  FP=  2,716
+                     FN=    151  TN=124,821
+  Static Baseline Ruleset
+  Confusion Matrix:  TP=158,460  FP= 73,991
+                     FN=    470  TN= 53,546
+  Confusion Matrix:  TP=15,893  FP= 2,271
+                     FN=     0  TN=10,483
+  Flow DR (Recall)             1.0
+  Flow FPR                     0.1781
+  Early Detection Rate         1.0
+  Youden J (Flow)              0.8219
