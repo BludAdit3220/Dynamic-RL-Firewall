@@ -202,12 +202,75 @@ def evaluate_rl_flows(
 
 # ── Static baseline ruleset ────────────────────────────────────────────────────
 
-def baseline_rule_engine(sample: np.ndarray) -> int:
-    """Heuristic: block if pkt_len > 1500 or src-port hash > 0.95."""
-    pkt_len  = sample[0]
-    port_sig = sample[1] if len(sample) > 1 else 0.0
-    if pkt_len > 1500 or port_sig > 0.95:
+def baseline_rule_engine(sample: np.ndarray, feature_names: list) -> int:
+    """
+    Heuristic rule engine based on real CIC-IDS2017 feature semantics.
+
+    Rules are expressed on RAW (un-normalised) feature values and look up
+    columns by name — so they are stable across different CSVs.
+
+    Rules (in priority order):
+      1. Volumetric flood   — Flow Bytes/s > 2,000,000
+      2. Packet-rate spike  — Flow Packets/s > 100,000
+      3. SYN flood          — SYN Flag Count > 1  (more than one SYN in a flow)
+      4. RST storm          — RST Flag Count > 2
+      5. Tiny-packet scan   — Min Packet Length == 0 AND Total Fwd Packets > 5
+      6. Zero-payload flood — Fwd Packet Length Max == 0 AND Flow Packets/s > 500
+      7. High-variance burst— Packet Length Variance > 5,000,000
+      8. Short-duration high-rate — Flow Duration < 1,000 (µs) AND Flow Packets/s > 1,000
+
+    These thresholds are grounded in published IDS literature and the
+    CIC-IDS2017 traffic characterisation paper (Sharafaldin et al., 2018).
+    A real iptables/Snort ruleset would use equivalent logic.
+    """
+    idx = {name: i for i, name in enumerate(feature_names)}
+
+    def get(col: str, default: float = 0.0) -> float:
+        i = idx.get(col)
+        return float(sample[i]) if i is not None else default
+
+    flow_bytes_s      = get("Flow Bytes/s")
+    flow_pkts_s       = get("Flow Packets/s")
+    syn_flag          = get("SYN Flag Count")
+    rst_flag          = get("RST Flag Count")
+    min_pkt_len       = get("Min Packet Length")
+    total_fwd_pkts    = get("Total Fwd Packets")
+    fwd_pkt_len_max   = get("Fwd Packet Length Max")
+    pkt_len_var       = get("Packet Length Variance")
+    flow_duration     = get("Flow Duration")   # microseconds
+
+    # Rule 1 — Volumetric flood (DDoS / DoS Hulk)
+    if flow_bytes_s > 2_000_000:
         return 1
+
+    # Rule 2 — Extreme packet rate (DoS GoldenEye / PortScan)
+    if flow_pkts_s > 100_000:
+        return 1
+
+    # Rule 3 — SYN flood (more than one SYN per flow is abnormal)
+    if syn_flag > 1:
+        return 1
+
+    # Rule 4 — RST storm (connection teardown abuse)
+    if rst_flag > 2:
+        return 1
+
+    # Rule 5 — Zero-length packet scan (PortScan / Heartbleed probe)
+    if min_pkt_len == 0 and total_fwd_pkts > 5:
+        return 1
+
+    # Rule 6 — Zero-payload high-rate flood
+    if fwd_pkt_len_max == 0 and flow_pkts_s > 500:
+        return 1
+
+    # Rule 7 — High packet-length variance (mixed flood pattern)
+    if pkt_len_var > 5_000_000:
+        return 1
+
+    # Rule 8 — Ultra-short high-rate flow (DoS slowloris / scanning)
+    if 0 < flow_duration < 1_000 and flow_pkts_s > 1_000:
+        return 1
+
     return 0
 
 
@@ -265,8 +328,9 @@ def evaluate(model_path: pathlib.Path, dataset_path: pathlib.Path, flow_len: int
             "and no feature_names saved. Re-train to fix."
         )
 
-    # ── Normalise ─────────────────────────────────────────────────────────
-    features = (features - mean) / std
+    # ── Normalise  (keep raw copy for the rule-based baseline) ──────────────
+    raw_features = features.copy()   # un-normalised — used by baseline_rule_engine
+    features     = (features - mean) / std
     print("[evaluate] Normalisation applied.")
 
     # ── Build flow episodes ────────────────────────────────────────────────
@@ -288,9 +352,10 @@ def evaluate(model_path: pathlib.Path, dataset_path: pathlib.Path, flow_len: int
     # ── RL evaluation (packet + flow level) ───────────────────────────────
     rl_pkt_metrics, rl_flow_metrics = evaluate_rl_flows(agent, episodes)
 
-    # ── Static baseline (packet-level only) ───────────────────────────────
+    # ── Static baseline (raw features + named rules) ────────────────────────
     base_block = np.array(
-        [baseline_rule_engine(x) for x in features], dtype=np.int32
+        [baseline_rule_engine(x, feature_names) for x in raw_features],
+        dtype=np.int32,
     )
     base_metrics = compute_metrics(base_block, labels)
 

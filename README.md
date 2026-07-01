@@ -151,12 +151,14 @@ The asymmetric penalty (missing an attack costs 2× more than a false positive) 
 
 ### RL Agent vs Static Ruleset — DDoS Head-to-Head
 
-| Metric | LSTM-DQN | Static Rules | Improvement |
+| Metric | LSTM-DQN | Static Rules* | Improvement |
 |---|---|---|---|
-| Detection Rate | **100.0%** | 16.77% | **+6× better** |
-| False Positive Rate | **1.33%** | 14.62% | **11× fewer** |
-| F1-Score | **0.995** | 0.262 | **3.8× better** |
-| MCC | **0.988** | 0.029 | Near-perfect vs near-random |
+| Detection Rate | **100.0%** | 99.7% | Matched (both excellent) |
+| False Positive Rate | **1.33%** | 58.0% | **43× fewer false alarms** |
+| F1-Score | **0.995** | 0.810 | **+0.185** |
+| MCC | **0.988** | 0.530 | Near-perfect vs weak |
+
+> *\* The static baseline was upgraded to use 8 real-world heuristic rules (volumetric floods, high-variance bursts, zero-payload scans, etc.) based on raw CIC-IDS features. While it successfully detects 99.7% of DDoS attacks, it suffers from a massive 58% false positive rate because rigid thresholds cannot separate complex attack traffic from heavy legitimate usage.*
 
 ### What "Early Detection Rate" Proves
 
